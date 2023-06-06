@@ -38,35 +38,27 @@ function Addon:Refresh()
     end
 end
 
-function Addon:UpdateQuestDB(changedQuests)
-    local Quests = {}
+function Addon:UpdateQuestDB(changedQuests, slow)
     local counter = 0
-
-    for id, changeTo in pairs(changedQuests) do
+    for id, changedTo in pairs(changedQuests) do
         counter = counter + 1
         if counter > 20 then
-            self:Print(">20 Quests Changed, please wait.")
+            if not slow then self:Print(">20 Quests Changed, please wait.") end
             C_Timer.After(0.5, function()
-                self:UpdateQuestDB(changedQuests)
+                self:UpdateQuestDB(changedQuests, true)
             end)
             break
-        else
-            if id ~= 'count' then
-                if not self.QuestDB[id] then
-                    self.QuestDB[id] = {completed = changeTo}
-                else
-                    self.QuestDB[id].completed = changeTo
-                end
-                if self.QuestDB[id] and not self.QuestDB[id].title then
-                    self.QuestDB[id].title =
-                        C_QuestLog.GetTitleForQuestID(id) or
-                            'Hidden/Tracking Quest'
-                end
-
-                self:Print("[" .. id .. "]", self.QuestDB[id].title,
-                           "changed from", not self.QuestDB[id].completed, "to",
-                           self.QuestDB[id].completed)
+        elseif id ~= 'count' then
+            if not self.QuestDB[id] then
+                self.QuestDB[id] = {completed = changedTo}
+            else
+                self.QuestDB[id].completed = changedTo
             end
+            if self.QuestDB[id] and not self.QuestDB[id].title then
+                self.QuestDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
+            end
+            local Q = self.QuestDB[id]
+            self:Print("[" .. id .. "]", Q.title, "changed from", not Q.completed, "to", Q.completed)
         end
     end
 end
@@ -82,7 +74,6 @@ function Addon:GetChangedQuests()
     local qDB = self.QuestDB
 
     local changed = {count = 0}
-
     for id, completed in pairs(completedQuests) do
         -- Quest was completed before and is now not completed
         if qDB[id] and qDB[id].completed == true and not completed then
@@ -100,17 +91,18 @@ function Addon:GetChangedQuests()
             changed.count = changed.count + 1
         end
     end
-
     for id, quest in pairs(qDB) do
+        -- Quest was completed before and is now not completed
         if completedQuests[id] == true and not quest.completed then
             changed[id] = true
             changed.count = changed.count + 1
         end
+        -- Quest was not completed before and is now completed
         if completedQuests[id] == false and quest.completed then
             changed[id] = false
             changed.count = changed.count + 1
         end
     end
-
+    
     return changed
 end
