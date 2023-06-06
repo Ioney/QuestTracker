@@ -1,0 +1,10 @@
+## Interface: 100100
+## Title: QuestTracker
+## Author: Your Name
+## Version: 1.0
+
+## SavedVariables: QuestTrackerDB
+
+embeds.xml
+
+core.lua
