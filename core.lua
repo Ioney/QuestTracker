@@ -1,77 +1,79 @@
 local ADDON_NAME, ns = ...
 
-local Addon = LibStub('AceAddon-3.0'):NewAddon(ADDON_NAME, 'AceConsole-3.0',
-                                               'AceEvent-3.0', "AceTimer-3.0")
+ns.Addon = LibStub('AceAddon-3.0'):NewAddon(ADDON_NAME, 'AceConsole-3.0', 'AceEvent-3.0', "AceTimer-3.0")
 local defaults = {char = {Quests = {}}}
 
-function Addon:OnInitialize()
+function ns.Addon:OnInitialize()
     local db = LibStub("AceDB-3.0"):New("QuestTrackerDB", defaults)
-    self.QuestDB = db.char.Quests
+    ns.QuestDB = db.char.Quests
+    ns.QuestHistory:Init()
 end
 
-function Addon:OnEnable() -- Called when the addon is enabled
-    if next(self.QuestDB) == nil then
+function ns.Addon:OnEnable()
+    if next(ns.QuestDB) == nil then
         self:Print("QuestDB is empty, getting completed quests")
-        for id, c in pairs(self.GetCompletedQuests()) do
-            self.QuestDB[id] = {completed = c}
-            print(id, self.QuestDB[id].completed)
-        end
+        for id, c in pairs(self.GetCompletedQuests()) do ns.QuestDB[id] = {completed = c} end
     end
-
     self:RegisterEvent('QUEST_LOG_UPDATE')
 end
 
-function Addon:OnDisable() -- Called when the addon is disabled
-    self:UnregisterAllBuckets()
-end
+function ns.Addon:QUEST_LOG_UPDATE() self:Refresh() end
 
-function Addon:QUEST_LOG_UPDATE()
-    self:Print("QUEST_LOG_UPDATE")
-    self:Refresh()
-end
-
-function Addon:Refresh()
+function ns.Addon:Refresh()
     local changedQuests = self:GetChangedQuests()
     if changedQuests.count > 0 then
         self:Print(changedQuests.count, "Quests Changed:")
-        Addon:UpdateQuestDB(changedQuests)
+        self:UpdateQuestDB(changedQuests)
+        ns.QuestHistory:Refresh()
     end
 end
 
-function Addon:UpdateQuestDB(changedQuests, slow)
+function ns.Addon:UpdateQuestDB(changedQuests, slow)
+    local mapID = C_Map.GetBestMapForUnit('player')
+    local mapName = C_Map.GetMapInfo(mapID).name
+    local x, y = C_Map.GetPlayerMapPosition(mapID, 'player'):GetXY()
+    local TIME = time()
+
     local counter = 0
     for id, changedTo in pairs(changedQuests) do
         counter = counter + 1
         if counter > 20 then
             if not slow then self:Print(">20 Quests Changed, please wait.") end
-            C_Timer.After(0.5, function()
-                self:UpdateQuestDB(changedQuests, true)
-            end)
+            C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true) end)
             break
         elseif id ~= 'count' then
-            if not self.QuestDB[id] then
-                self.QuestDB[id] = {completed = changedTo}
+            if not ns.QuestDB[id] then
+                ns.QuestDB[id] = {id = id, completed = changedTo}
             else
-                self.QuestDB[id].completed = changedTo
+                ns.QuestDB[id].completed = changedTo
             end
-            if self.QuestDB[id] and not self.QuestDB[id].title then
-                self.QuestDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
+
+            if not ns.QuestDB[id].title then
+                ns.QuestDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
-            local Q = self.QuestDB[id]
-            self:Print("[" .. id .. "]", Q.title, "changed from", not Q.completed, "to", Q.completed)
+
+            ns.QuestDB[id].map = {id = mapID or UNKNOWN, name = mapName or UNKNOWN}
+            ns.QuestDB[id].x = x or 0
+            ns.QuestDB[id].y = y or 0
+            ns.QuestDB[id].time = TIME
+
+            print(ns.QuestDB[id].map, ns.QuestDB[id].x, ns.QuestDB[id].y, ns.QuestDB[id].time)
+
+            self:Print("[" .. id .. "]", ns.QuestDB[id].title, "changed from", not ns.QuestDB[id].completed, "to",
+                       ns.QuestDB[id].completed)
         end
     end
 end
 
-function Addon:GetCompletedQuests()
+function ns.Addon:GetCompletedQuests()
     local Q = {}
     for _, id in pairs(C_QuestLog.GetAllCompletedQuestIDs()) do Q[id] = true end
     return Q
 end
 
-function Addon:GetChangedQuests()
+function ns.Addon:GetChangedQuests()
     local completedQuests = self:GetCompletedQuests()
-    local qDB = self.QuestDB
+    local qDB = ns.QuestDB
 
     local changed = {count = 0}
     for id, completed in pairs(completedQuests) do
@@ -103,6 +105,8 @@ function Addon:GetChangedQuests()
             changed.count = changed.count + 1
         end
     end
-    
+
     return changed
 end
+
+ns.Addon:RegisterChatCommand("QT", function() if ns.QuestHistory.Frame then ns.QuestHistory.Frame:Show() end end)
