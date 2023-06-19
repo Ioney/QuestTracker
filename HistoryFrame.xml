@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
-    <Frame name="QuestTrackerHistoryFrameTemplate" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true" virtual="true" inherits="PortraitFrameTemplate">
+    <Frame name="QuestTrackerHistoryFrameTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true" virtual="true" inherits="DefaultPanelFlatTemplate">
         <Size>
             <AbsDimension x="650" y="300"></AbsDimension>
         </Size>
@@ -7,9 +7,10 @@
             <Anchor point="CENTER"></Anchor>
         </Anchors>
         <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"></Button>
             <Frame parentKey="DragArea" inherits="TitleDragAreaTemplate">
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeKey="$parent.TitleContainer"></Anchor>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.TitleContainer" x="-24"></Anchor>
                     <Anchor point="BOTTOMRIGHT" relativeKey="$parent.TitleContainer"></Anchor>
                 </Anchors>
             </Frame>
@@ -20,26 +21,28 @@
                     </Layer>
                 </Layers>
                 <Anchors>
-                    <Anchor point="TOPLEFT" relativeTo="$parentBg" x="10" y="-40"></Anchor>
-                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentBg" x="-10" y="10"></Anchor>
+                    <Anchor point="TOPLEFT" relativeTo="$parentBg"></Anchor>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parentBg"></Anchor>
                 </Anchors>
                 <Frames>
-                    <Frame parentKey="HeaderContainer" inherits="HistoryFrameQuestListHeadersTemplate">
+                    <!-- <Frame parentKey="HeaderContainer" inherits="HistoryFrameQuestListHeadersTemplate">
                         <Anchors>
                             <Anchor point="TOPLEFT" x="4" y="-1"></Anchor>
                             <Anchor point="TOPRIGHT" x="-26" y="-1"></Anchor>
                         </Anchors>
-                    </Frame>
+                    </Frame> -->
                     <Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeKey="$parent.HeaderContainer" relativePoint="BOTTOMLEFT" x="0" y="-6"></Anchor>
+                            <Anchor point="TOPLEFT" x="-1" y="-1"></Anchor>
+                            <Anchor point="BOTTOMRIGHT" x="-26" y="1"></Anchor>
+                            <!-- <Anchor point="TOPLEFT" relativeKey="$parent.HeaderContainer" relativePoint="BOTTOMLEFT" x="0" y="-6"></Anchor>
                             <Anchor point="RIGHT" relativeKey="$parent.HeaderContainer" relativePoint="RIGHT"></Anchor>
-                            <Anchor point="BOTTOM" x="0" y="3"></Anchor>
+                            <Anchor point="BOTTOM" x="0" y="3"></Anchor> -->
                         </Anchors>
                     </Frame>
                     <EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
                         <Anchors>
-                            <Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="9" y="0"></Anchor>
+                            <Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="9" y="-4"></Anchor>
                             <Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="9" y="4"></Anchor>
                         </Anchors>
                     </EventFrame>

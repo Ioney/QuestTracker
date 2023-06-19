@@ -52,12 +52,11 @@ function ns.Addon:UpdateQuestDB(changedQuests, slow)
                 ns.QuestDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
 
-            ns.QuestDB[id].map = {id = mapID or UNKNOWN, name = mapName or UNKNOWN}
+            ns.QuestDB[id].mapId = mapID
+            ns.QuestDB[id].mapName = mapName or UNKNOWN
             ns.QuestDB[id].x = x or 0
             ns.QuestDB[id].y = y or 0
             ns.QuestDB[id].time = TIME
-
-            print(ns.QuestDB[id].map, ns.QuestDB[id].x, ns.QuestDB[id].y, ns.QuestDB[id].time)
 
             self:Print("[" .. id .. "]", ns.QuestDB[id].title, "changed from", not ns.QuestDB[id].completed, "to",
                        ns.QuestDB[id].completed)

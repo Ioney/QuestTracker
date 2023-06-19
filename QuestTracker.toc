@@ -2,6 +2,7 @@
 ## Title: QuestTracker
 ## Author: Your Name
 ## Version: 1.0
+## IconTexture: 588612
 
 ## SavedVariables: QuestTrackerDB
 
