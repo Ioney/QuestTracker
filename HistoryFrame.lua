@@ -1,34 +1,9 @@
 local ADDON_NAME, ns = ...
 
-local QuestHistory = {}
+local HistoryFrame = CreateFrame("Frame", ADDON_NAME .. "HistoryFrame", nil, ADDON_NAME .. "HistoryFrameTemplate")
 
-local function QuestList()
-    local QuestList = {}
-    local TIME = time()
-    for id, quest in pairs(ns.QuestDB) do
-        if quest.title then
-            table.insert(QuestList, {
-                id = id,
-                title = quest.title,
-                time = quest.time or -1, -- defaults to -1 for sorting
-                map = quest.mapName,
-                pos = {x = quest.x or 0, y = quest.y or 0}
-            })
-        end
-    end
-    return QuestList
-end
-
-function QuestHistory:Refresh()
-    self.dataProvider:Flush()
-    self.dataProvider:InsertTable(QuestList())
-    self.dataProvider:Sort()
-    self.ScrollView:SetDataProvider(self.dataProvider)
-end
-
-function QuestHistory:Init()
-    self.Frame = CreateFrame("Frame", ADDON_NAME .. "HistoryFrame", nil, ADDON_NAME .. "HistoryFrameTemplate")
-    self.Frame:SetTitle(ADDON_NAME)
+function HistoryFrame:Init()
+    self:SetTitle(ADDON_NAME)
 
     local initializer = function(line, quest)
         line:SetHighlightAtlas("auctionhouse-ui-row-highlight")
@@ -56,7 +31,7 @@ function QuestHistory:Init()
         line.Time:SetText(ns.QuestDB[quest.id].time and date("%d.%m %H:%M:%S", quest.time) or UNKNOWN)
     end
 
-    local dataProvider = CreateDataProvider(QuestList())
+    local dataProvider = CreateDataProvider(ns.QuestList())
     dataProvider:SetSortComparator(function(A, B) return A.time > B.time end)
     self.dataProvider = dataProvider
 
@@ -66,10 +41,9 @@ function QuestHistory:Init()
     ScrollView:SetElementInitializer("Button", initializer)
     self.ScrollView = ScrollView
 
-    ScrollUtil.InitScrollBoxWithScrollBar(self.Frame.QuestListContainer.ScrollBox,
-                                          self.Frame.QuestListContainer.ScrollBar, ScrollView)
+    ScrollUtil.InitScrollBoxWithScrollBar(self.QuestList.ScrollBox, self.QuestList.ScrollBar, ScrollView)
 
-    self.Frame.QuestListContainer:Show()
+    self.QuestList:Show()
 end
 
-ns.QuestHistory = QuestHistory
+ns.HistoryFrame = HistoryFrame

@@ -8,7 +8,7 @@
 
 embeds.xml
 
+QuestHistory.lua
 HistoryFrame.xml
 HistoryFrame.lua
-
-core.lua
+Addon.lua
