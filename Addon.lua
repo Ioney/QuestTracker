@@ -30,4 +30,12 @@ end
 
 Addon:RegisterChatCommand("QT", function() if ns.HistoryFrame then ns.HistoryFrame:Show() end end)
 
+function Addon:CURRENCY_DISPLAY_UPDATE(_, id, qty, change, gain, lost)
+    if id then
+        local Currency = C_CurrencyInfo.GetCurrencyInfo(id)
+        local str = "Currency [%d] (%s) changed from %d to %d."
+        self:Print(format(str, id, Currency.name, Currency.quantity - change, Currency.quantity))
+    end
+end
+
 function ns.Print(...) Addon:Print(...) end

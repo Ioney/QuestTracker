@@ -6,6 +6,8 @@
 
 ## SavedVariables: QuestTrackerDB
 
+Zar_ForceNodes.lua
+
 embeds.xml
 
 QuestHistory.lua
