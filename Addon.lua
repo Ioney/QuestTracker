@@ -1,17 +1,18 @@
 local ADDON_NAME, ns = ...
 
+_G['HandyNotes_ZarPluginsDevelopment'] = true
+
 local Addon = LibStub('AceAddon-3.0'):NewAddon(ADDON_NAME, 'AceConsole-3.0', 'AceEvent-3.0', "AceTimer-3.0")
 
 function Addon:OnInitialize()
-    local db = LibStub("AceDB-3.0"):New("QuestTrackerDB", {char = {Quests = {}}})
+    local db = LibStub("AceDB-3.0"):New("ZarPlugins_DevDB", {char = {Quests = {}}})
     ns.QuestDB = db.char.Quests
     ns.HistoryFrame:Init()
 end
 
 function Addon:OnEnable()
-    if next(ns.QuestDB) == nil then
-        self:Print("QuestDB is empty, getting completed quests")
-        for id, c in pairs(self.GetCompletedQuests()) do ns.QuestDB[id] = {completed = c} end
+    if next(ns.QuestDB) == nil then -- Generate QuestDB at first Login.
+        for id, c in pairs(ns.QuestHistory.GetCompletedQuests()) do ns.QuestDB[id] = {completed = c} end
     end
     self:RegisterEvent('QUEST_LOG_UPDATE')
     self:RegisterEvent('CURRENCY_DISPLAY_UPDATE')
@@ -28,10 +29,17 @@ function Addon:Refresh()
     end
 end
 
-Addon:RegisterChatCommand("QT", function() if ns.HistoryFrame then ns.HistoryFrame:Show() end end)
-
 function Addon:CURRENCY_DISPLAY_UPDATE(_, id, qty, change, gain, lost)
-    if id then
+    local SPAM = {
+        [2155] = true,
+        [2156] = true,
+        [2157] = true,
+        [2158] = true,
+        [2160] = true,
+        [2162] = true,
+        [2159] = true
+    }
+    if id and not SPAM[id] then
         local Currency = C_CurrencyInfo.GetCurrencyInfo(id)
         local str = "Currency [%d] (%s) changed from %d to %d."
         self:Print(format(str, id, Currency.name, Currency.quantity - change, Currency.quantity))
@@ -39,3 +47,5 @@ function Addon:CURRENCY_DISPLAY_UPDATE(_, id, qty, change, gain, lost)
 end
 
 function ns.Print(...) Addon:Print(...) end
+
+Addon:RegisterChatCommand("QT", function() if ns.HistoryFrame then ns.HistoryFrame:Show() end end)
