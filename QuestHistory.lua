@@ -31,7 +31,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
     for id, changedTo in pairs(changedQuests) do
         counter = counter + 1
         if counter > 20 then
-            if not slow then Addon:Print(">20 Quests Changed, please wait.") end
+            if not slow then Addon:Print('>20 Quests Changed, please wait.') end
             C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true) end)
             break
         elseif id ~= 'count' then
@@ -51,8 +51,8 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
             ns.QuestDB[id].y = y or 0
             ns.QuestDB[id].time = TIME
 
-            ns.Print("[" .. id .. "]", ns.QuestDB[id].title, "changed from", not ns.QuestDB[id].completed, "to",
-                     ns.QuestDB[id].completed)
+            local str = 'Quest [%d] (%s) changed from %d to %d.'
+            ns.Print(format(str, id, ns.QuestDB[id].title, not ns.QuestDB[id].completed, ns.QuestDB[id].completed))
         end
     end
 end

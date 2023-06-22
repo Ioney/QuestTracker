@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
-    <Frame name="QuestTrackerHistoryFrameTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true" virtual="true" inherits="DefaultPanelFlatTemplate">
+    <Frame name="ZarPlugins_DevHistoryFrameTemplate" hidden="true" parent="UIParent" enableMouse="true" movable="true" clampedToScreen="true" virtual="true" inherits="DefaultPanelFlatTemplate">
         <Size>
             <AbsDimension x="650" y="300"></AbsDimension>
         </Size>

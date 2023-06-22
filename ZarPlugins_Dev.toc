@@ -1,13 +1,14 @@
 ## Interface: 100100
-## Title: QuestTracker
-## Author: Your Name
+## Title: ZarPlugins_dev
+## Author: Ioney
 ## Version: 1.0
 ## IconTexture: 588612
 
-## SavedVariables: QuestTrackerDB
+## SavedVariables: ZarPlugins_DevDB
 
 embeds.xml
 
+Zar_ForceNodes.lua
 QuestHistory.lua
 HistoryFrame.xml
 HistoryFrame.lua
