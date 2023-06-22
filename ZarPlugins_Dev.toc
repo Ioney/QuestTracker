@@ -4,7 +4,7 @@
 ## Version: 1.0
 ## IconTexture: 588612
 
-## SavedVariables: ZarPlugins_devDB
+## SavedVariables: ZarPlugins_DevDB
 
 embeds.xml
 
