@@ -3,7 +3,7 @@ local ADDON_NAME, ns = ...
 local HistoryFrame = CreateFrame('Frame', ADDON_NAME .. 'HistoryFrame', nil, ADDON_NAME .. 'HistoryFrameTemplate')
 
 function HistoryFrame:Init()
-    self:SetTitle('Quest History')
+    self:SetTitle(ADDON_NAME .. ' History')
 
     local initializer = function(line, quest)
         line:SetHighlightAtlas('auctionhouse-ui-row-highlight')

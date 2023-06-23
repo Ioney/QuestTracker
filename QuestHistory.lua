@@ -26,6 +26,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
     local mapName = C_Map.GetMapInfo(mapID).name
     local x, y = C_Map.GetPlayerMapPosition(mapID, 'player'):GetXY()
     local TIME = time()
+    local qDB = ns.QuestDB
 
     local counter = 0
     for id, changedTo in pairs(changedQuests) do
@@ -35,24 +36,25 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
             C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true) end)
             break
         elseif id ~= 'count' then
-            if not ns.QuestDB[id] then
-                ns.QuestDB[id] = {id = id, completed = changedTo}
+            if not qDB[id] then
+                qDB[id] = {id = id, completed = changedTo}
             else
-                ns.QuestDB[id].completed = changedTo
+                qDB[id].completed = changedTo
             end
 
-            if not ns.QuestDB[id].title then
-                ns.QuestDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
+            if not qDB[id].title then
+                qDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
 
-            ns.QuestDB[id].mapId = mapID
-            ns.QuestDB[id].mapName = mapName or UNKNOWN
-            ns.QuestDB[id].x = x or 0
-            ns.QuestDB[id].y = y or 0
-            ns.QuestDB[id].time = TIME
+            qDB[id].mapId = mapID
+            qDB[id].mapName = mapName or UNKNOWN
+            qDB[id].x = x or 0
+            qDB[id].y = y or 0
+            qDB[id].time = TIME
 
-            local str = 'Quest [%d] (%s) changed from %d to %d.'
-            ns.Print(format(str, id, ns.QuestDB[id].title, not ns.QuestDB[id].completed, ns.QuestDB[id].completed))
+            local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
+            local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
+            ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
         end
     end
 end
