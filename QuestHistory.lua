@@ -21,7 +21,7 @@ end
 
 local QuestHistory = {}
 
-function QuestHistory:UpdateQuestDB(changedQuests, slow)
+function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
     local mapID = C_Map.GetBestMapForUnit('player')
     local mapName = C_Map.GetMapInfo(mapID).name
     local x, y = C_Map.GetPlayerMapPosition(mapID, 'player'):GetXY()
@@ -33,7 +33,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
         counter = counter + 1
         if counter > 20 then
             if not slow then Addon:Print('>20 Quests Changed, please wait.') end
-            C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true) end)
+            C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true, init) end)
             break
         elseif id ~= 'count' then
             if not qDB[id] then
@@ -45,16 +45,18 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow)
             if not qDB[id].title then
                 qDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
+            
+            if not init then
+                qDB[id].mapId = mapID
+                qDB[id].mapName = mapName or UNKNOWN
+                qDB[id].x = x or 0
+                qDB[id].y = y or 0
+                qDB[id].time = TIME
 
-            qDB[id].mapId = mapID
-            qDB[id].mapName = mapName or UNKNOWN
-            qDB[id].x = x or 0
-            qDB[id].y = y or 0
-            qDB[id].time = TIME
-
-            local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
-            local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
-            ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
+                local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
+                local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
+                ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
+            end
         end
     end
 end

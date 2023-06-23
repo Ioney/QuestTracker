@@ -8,8 +8,6 @@
 
 embeds.xml
 
-options.lua
-
 QuestHistory.lua
 HistoryFrame.xml
 HistoryFrame.lua
