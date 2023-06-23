@@ -10,7 +10,7 @@ function Addon:OnInitialize()
 end
 
 function Addon:OnEnable()
-    ns.QuestHistory:UpdateQuestDB(ns.QuestHistory:GetChangedQuests(), nil, true)
+    ns.QuestHistory:UpdateQuestDB(ns.QuestHistory:GetChangedQuests(), nil, next(ns.QuestDB) == nil)
     self:RegisterEvent('QUEST_LOG_UPDATE')
 end
 
