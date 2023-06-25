@@ -21,7 +21,7 @@ function Addon:Refresh()
     if changedQuests.count > 0 then
         self:Print(changedQuests.count, 'Quests Changed:')
         ns.QuestHistory:UpdateQuestDB(changedQuests)
-        ns.QuestHistory:Refresh()
+        ns.HistoryFrame:Refresh()
     end
 end
 

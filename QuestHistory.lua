@@ -67,13 +67,6 @@ function QuestHistory:GetCompletedQuests()
     return Q
 end
 
-function QuestHistory:Refresh()
-    ns.HistoryFrame.dataProvider:Flush()
-    ns.HistoryFrame.dataProvider:InsertTable(ns.QuestList())
-    ns.HistoryFrame.dataProvider:Sort()
-    ns.HistoryFrame.ScrollView:SetDataProvider(ns.HistoryFrame.dataProvider)
-end
-
 function QuestHistory:GetChangedQuests()
     local completedQuests = self:GetCompletedQuests()
     local qDB = ns.QuestDB

@@ -46,4 +46,11 @@ function HistoryFrame:Init()
     self.QuestList:Show()
 end
 
+function HistoryFrame:Refresh()
+    self.dataProvider:Flush()
+    self.dataProvider:InsertTable(ns.QuestList())
+    self.dataProvider:Sort()
+    self.ScrollView:SetDataProvider(self.dataProvider)
+end
+
 ns.HistoryFrame = HistoryFrame
