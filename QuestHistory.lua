@@ -32,7 +32,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
     for id, changedTo in pairs(changedQuests) do
         counter = counter + 1
         if counter > 20 then
-            if not slow then Addon:Print('>20 Quests Changed, please wait.') end
+            if not slow then ns.Print('>20 Quests Changed, please wait.') end
             C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true, init) end)
             break
         elseif id ~= 'count' then
@@ -45,7 +45,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
             if not qDB[id].title then
                 qDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
-            
+
             if not init then
                 qDB[id].mapId = mapID
                 qDB[id].mapName = mapName or UNKNOWN
