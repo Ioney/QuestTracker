@@ -24,7 +24,8 @@ local QuestHistory = {}
 function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
     local mapID = C_Map.GetBestMapForUnit('player')
     local mapName = C_Map.GetMapInfo(mapID).name
-    local x, y = C_Map.GetPlayerMapPosition(mapID, 'player'):GetXY()
+    local mapPos = C_Map.GetPlayerMapPosition(mapID, 'player')
+    local x, y = mapPos and mapPos:GetXY() or unpack({0, 0})
     local TIME = time()
     local qDB = ns.QuestDB
 
@@ -33,7 +34,7 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
         counter = counter + 1
         if counter > 20 then
             if not slow then ns.Print('>20 Quests Changed, please wait.') end
-            C_Timer.After(0.5, function() self:UpdateQuestDB(changedQuests, true, init) end)
+            C_Timer.After(2, function() self:UpdateQuestDB(changedQuests, true, init) end)
             break
         elseif id ~= 'count' then
             if not qDB[id] then
@@ -55,7 +56,9 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
 
                 local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
                 local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
-                ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
+                if not slow then
+                    ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
+                end
             end
         end
     end

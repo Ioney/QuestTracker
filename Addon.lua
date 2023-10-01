@@ -14,9 +14,7 @@ function Addon:OnEnable()
     self:RegisterEvent('QUEST_LOG_UPDATE')
 end
 
-function Addon:QUEST_LOG_UPDATE() self:Refresh() end
-
-function Addon:Refresh()
+function Addon:QUEST_LOG_UPDATE()
     local changedQuests = ns.QuestHistory:GetChangedQuests()
     if changedQuests.count > 0 then
         self:Print(changedQuests.count, 'Quests Changed:')
