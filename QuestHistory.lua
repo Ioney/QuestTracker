@@ -25,7 +25,8 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
     local mapID = C_Map.GetBestMapForUnit('player')
     local mapName = C_Map.GetMapInfo(mapID).name
     local mapPos = C_Map.GetPlayerMapPosition(mapID, 'player')
-    local x, y = mapPos and mapPos:GetXY() or unpack({0, 0})
+    local x, y = 0, 0
+    if mapPos then x, y = mapPos:GetXY() end
     local TIME = time()
     local qDB = ns.QuestDB
 
