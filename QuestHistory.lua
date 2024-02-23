@@ -77,30 +77,30 @@ function QuestHistory:GetChangedQuests()
     local changed = {count = 0}
     for id, completed in pairs(completedQuests) do
         -- Quest was completed before and is now not completed
-        if qDB[id] and qDB[id].completed == true and not completed then
-            changed[id] = false
+        if qDB[id] and qDB[id].completed == "true" and not completed then
+            changed[id] = "false"
             changed.count = changed.count + 1
         end
         -- Quest was not completed before and is now completed
-        if qDB[id] and qDB[id].completed == false and completed then
-            changed[id] = true
+        if qDB[id] and qDB[id].completed == "false" and completed then
+            changed[id] = "true"
             changed.count = changed.count + 1
         end
         -- Quest did not exist in QuestDB and is now completed
         if not qDB[id] and completed then
-            changed[id] = true
+            changed[id] = "true"
             changed.count = changed.count + 1
         end
     end
     for id, quest in pairs(qDB) do
         -- Quest was completed before and is now not completed
-        if completedQuests[id] == true and not quest.completed then
-            changed[id] = true
+        if completedQuests[id] == "true" and not quest.completed then
+            changed[id] = "true"
             changed.count = changed.count + 1
         end
         -- Quest was not completed before and is now completed
-        if completedQuests[id] == false and quest.completed then
-            changed[id] = false
+        if completedQuests[id] == "false" and quest.completed then
+            changed[id] = "false"
             changed.count = changed.count + 1
         end
     end
