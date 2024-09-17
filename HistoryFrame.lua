@@ -28,7 +28,7 @@ function HistoryFrame:Init()
         line.Map:SetText(quest.map)
         line.Position:SetText(format('%.2f %.2f', quest.pos.x * 100 or 0, quest.pos.y * 100 or 0))
         line.Id:SetText(quest.id)
-        line.Time:SetText(ns.QuestDB[quest.id].time and date('%d.%m %H:%M:%S', quest.time) or UNKNOWN)
+        line.Time:SetText(ns.DB.char.Quests[quest.id].time and date('%d.%m %H:%M:%S', quest.time) or UNKNOWN)
     end
 
     local dataProvider = CreateDataProvider(ns.QuestList())

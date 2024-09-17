@@ -1,10 +1,10 @@
 local ADDON_NAME, ns = ...
 
----------- Helper Function to generate the QuestList from ns.QuestDB ----------
+---------- Helper Function to generate the QuestList from ns.DB.char.Quests ----------
 function ns.QuestList()
     local QuestList = {}
     local TIME = time()
-    for id, quest in pairs(ns.QuestDB) do
+    for id, quest in pairs(ns.DB.char.Quests) do
         if quest.title then
             table.insert(QuestList, {
                 id = id,
@@ -21,23 +21,27 @@ end
 
 local QuestHistory = {}
 
-function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
+function QuestHistory:Initialize()
+    for _, id in pairs(C_QuestLog.GetAllCompletedQuestIDs()) do ns.DB.char.Quests[id] = {completed = true} end
+end
+
+function QuestHistory:UpdateQuestDB()
     local mapID = C_Map.GetBestMapForUnit('player')
     local mapName = C_Map.GetMapInfo(mapID).name
     local mapPos = C_Map.GetPlayerMapPosition(mapID, 'player')
     local x, y = 0, 0
     if mapPos then x, y = mapPos:GetXY() end
     local TIME = time()
-    local qDB = ns.QuestDB
+    local qDB = ns.DB.char.Quests
 
     local counter = 0
-    for id, changedTo in pairs(changedQuests) do
+    for id, changedTo in pairs(self:GetChangedQuests().quests) do
         counter = counter + 1
         if counter > 20 then
-            if not slow then ns.Print('>20 Quests Changed, please wait.') end
-            C_Timer.After(2, function() self:UpdateQuestDB(changedQuests, true, init) end)
+            ns.Print('>20 Quests Changed, please wait.')
+            C_Timer.After(1, function() self:UpdateQuestDB() end)
             break
-        elseif id ~= 'count' then
+        else
             if not qDB[id] then
                 qDB[id] = {id = id, completed = changedTo}
             else
@@ -48,19 +52,16 @@ function QuestHistory:UpdateQuestDB(changedQuests, slow, init)
                 qDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
             end
 
-            if not init then
-                qDB[id].mapId = mapID
-                qDB[id].mapName = mapName or UNKNOWN
-                qDB[id].x = x or 0
-                qDB[id].y = y or 0
-                qDB[id].time = TIME
+            qDB[id].mapId = mapID
+            qDB[id].mapName = mapName or UNKNOWN
+            qDB[id].x = x or 0
+            qDB[id].y = y or 0
+            qDB[id].time = TIME
 
-                local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
-                local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
-                if not slow then
-                    ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
-                end
-            end
+            local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
+            local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
+            ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
+            ns.HistoryFrame:Refresh()
         end
     end
 end
@@ -73,40 +74,41 @@ end
 
 function QuestHistory:GetChangedQuests()
     local completedQuests = self:GetCompletedQuests()
-    local qDB = ns.QuestDB
+    local qDB = ns.DB.char.Quests
 
-    local changed = {count = 0}
+    local counter = 0
+    local quests = {}
     for id, completed in pairs(completedQuests) do
         -- Quest was completed before and is now not completed
         if qDB[id] and qDB[id].completed == true and not completed then
-            changed[id] = false
-            changed.count = changed.count + 1
+            quests[id] = false
+            counter = counter + 1
         end
         -- Quest was not completed before and is now completed
         if qDB[id] and qDB[id].completed == false and completed then
-            changed[id] = true
-            changed.count = changed.count + 1
+            quests[id] = true
+            counter = counter + 1
         end
         -- Quest did not exist in QuestDB and is now completed
         if not qDB[id] and completed then
-            changed[id] = true
-            changed.count = changed.count + 1
+            quests[id] = true
+            counter = counter + 1
         end
     end
     for id, quest in pairs(qDB) do
         -- Quest was completed before and is now not completed
         if completedQuests[id] == true and not quest.completed then
-            changed[id] = true
-            changed.count = changed.count + 1
+            quests[id] = true
+            counter = counter + 1
         end
         -- Quest was not completed before and is now completed
         if completedQuests[id] == false and quest.completed then
-            changed[id] = false
-            changed.count = changed.count + 1
+            quests[id] = false
+            counter = counter + 1
         end
     end
 
-    return changed
+    return {quests = quests, counter = counter}
 end
 
 ns.QuestHistory = QuestHistory
