@@ -2,4 +2,5 @@
 
 * Quest Tracker with History UI
 
-![grafik](https://github.com/Ioney/QuestTracker/assets/4973036/0f479b62-5899-44fe-ae1b-1e015c92c01d)
+![image](https://github.com/user-attachments/assets/de32f49d-3a22-4eb3-9d84-8365da753883)
+
