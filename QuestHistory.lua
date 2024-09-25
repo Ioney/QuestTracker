@@ -21,10 +21,6 @@ end
 
 local QuestHistory = {}
 
-function QuestHistory:Initialize()
-    for _, id in pairs(C_QuestLog.GetAllCompletedQuestIDs()) do ns.DB.char.Quests[id] = {completed = true} end
-end
-
 function QuestHistory:UpdateQuestDB()
     local mapID = C_Map.GetBestMapForUnit('player')
     local mapName = C_Map.GetMapInfo(mapID).name

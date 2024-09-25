@@ -2,13 +2,14 @@ local ADDON_NAME, ns = ...
 
 local Addon = LibStub('AceAddon-3.0'):NewAddon(ADDON_NAME, 'AceConsole-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 
-function Addon:OnInitialize()
-    ns.DB = LibStub('AceDB-3.0'):New(ADDON_NAME .. 'DB', {char = {Quests = {}}})
-    if next(ns.DB.char.Quests) == nil then ns.QuestHistory:Initialize() end
-    ns.HistoryFrame:Init()
-end
+function Addon:OnInitialize() ns.DB = LibStub('AceDB-3.0'):New('QuestTrackerDB', {char = {Quests = {}}}) end
 
-function Addon:OnEnable() self:RegisterEvent('QUEST_LOG_UPDATE') end
+function Addon:OnEnable()
+    local quests = C_QuestLog.GetAllCompletedQuestIDs()
+    for _, id in pairs(quests) do if not ns.DB.char.Quests[id] then ns.DB.char.Quests[id] = {completed = true} end end
+    ns.HistoryFrame:Init()
+    self:RegisterEvent('QUEST_LOG_UPDATE')
+end
 
 function Addon:QUEST_LOG_UPDATE()
     local changedQuests = ns.QuestHistory:GetChangedQuests()

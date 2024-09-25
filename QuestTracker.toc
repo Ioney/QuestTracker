@@ -1,7 +1,7 @@
 ## Interface: 100100
 ## Title: QuestTracker
 ## Author: Ioney
-## Version: 1.0
+## Version: 0.2
 ## IconTexture: 588612
 
 ## SavedVariables: QuestTrackerDB
