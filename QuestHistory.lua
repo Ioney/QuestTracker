@@ -28,7 +28,6 @@ function QuestHistory:UpdateQuestDB()
     local x, y = 0, 0
     if mapPos then x, y = mapPos:GetXY() end
     local TIME = time()
-    local qDB = ns.DB.char.Quests
 
     local counter = 0
     for id, changedTo in pairs(self:GetChangedQuests().quests) do
@@ -38,25 +37,23 @@ function QuestHistory:UpdateQuestDB()
             C_Timer.After(1, function() self:UpdateQuestDB() end)
             break
         else
-            if not qDB[id] then
-                qDB[id] = {id = id, completed = changedTo}
+            if not ns.DB.char.Quests[id] then
+                ns.DB.char.Quests[id] = {id = id, completed = changedTo}
             else
-                qDB[id].completed = changedTo
+                ns.DB.char.Quests[id].completed = changedTo
             end
 
-            if not qDB[id].title then
-                qDB[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
+            if not ns.DB.char.Quests[id].title then
+                ns.DB.char.Quests[id].title = 'Pending ...'
+                C_QuestLog.RequestLoadQuestByID(id)
             end
 
-            qDB[id].mapId = mapID
-            qDB[id].mapName = mapName or UNKNOWN
-            qDB[id].x = x or 0
-            qDB[id].y = y or 0
-            qDB[id].time = TIME
+            ns.DB.char.Quests[id].mapId = mapID
+            ns.DB.char.Quests[id].mapName = mapName or UNKNOWN
+            ns.DB.char.Quests[id].x = x or 0
+            ns.DB.char.Quests[id].y = y or 0
+            ns.DB.char.Quests[id].time = TIME
 
-            local tru, fls = '|cFF00FF00TRUE|r', '|cFFFF0000FALSE|r'
-            local change = qDB[id].completed and (fls .. " > " .. tru) or (tru .. " > " .. fls)
-            ns.Print(format('Quest [%d] (%s) changed from %s', id, qDB[id].title, change))
             ns.HistoryFrame:Refresh()
         end
     end
@@ -70,28 +67,27 @@ end
 
 function QuestHistory:GetChangedQuests()
     local completedQuests = self:GetCompletedQuests()
-    local qDB = ns.DB.char.Quests
 
     local counter = 0
     local quests = {}
     for id, completed in pairs(completedQuests) do
         -- Quest was completed before and is now not completed
-        if qDB[id] and qDB[id].completed == true and not completed then
+        if ns.DB.char.Quests[id] and ns.DB.char.Quests[id].completed == true and not completed then
             quests[id] = false
             counter = counter + 1
         end
         -- Quest was not completed before and is now completed
-        if qDB[id] and qDB[id].completed == false and completed then
+        if ns.DB.char.Quests[id] and ns.DB.char.Quests[id].completed == false and completed then
             quests[id] = true
             counter = counter + 1
         end
         -- Quest did not exist in QuestDB and is now completed
-        if not qDB[id] and completed then
+        if not ns.DB.char.Quests[id] and completed then
             quests[id] = true
             counter = counter + 1
         end
     end
-    for id, quest in pairs(qDB) do
+    for id, quest in pairs(ns.DB.char.Quests) do
         -- Quest was completed before and is now not completed
         if completedQuests[id] == true and not quest.completed then
             quests[id] = true
