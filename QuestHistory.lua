@@ -30,7 +30,7 @@ function QuestHistory:UpdateQuestDB()
     local TIME = time()
 
     local counter = 0
-    for id, changedTo in pairs(self:GetChangedQuests().quests) do
+    for id, changedTo in pairs(ns.changedQuests.quests) do
         counter = counter + 1
         if counter > 20 then
             ns.Print('>20 Quests Changed, please wait.')

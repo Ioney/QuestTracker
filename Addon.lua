@@ -17,15 +17,19 @@ function Addon:InitQDB()
 end
 
 function Addon:QUEST_LOG_UPDATE()
-    local changedQuests = ns.QuestHistory:GetChangedQuests()
-    if changedQuests.counter > 0 then
-        self:Print(changedQuests.counter, 'Quests Changed:')
+    ns.changedQuests = ns.QuestHistory:GetChangedQuests() or {quests = {}, counter = 0}
+    if ns.changedQuests.counter > 0 then
+        self:Print(ns.changedQuests.counter, 'Quests Changed:')
         ns.QuestHistory:UpdateQuestDB(true)
         ns.HistoryFrame:Refresh()
     end
 end
 
-function Addon:QUEST_DATA_LOAD_RESULT(e, id, success)
+function Addon:QUEST_DATA_LOAD_RESULT(e, id, success)    
+    if not ns.changedQuests or not ns.changedQuests.quests or not ns.changedQuests.quests[id] then
+        return
+    end
+
     if ns.DB.char.Quests[id] and ns.DB.char.Quests[id].completed ~= nil then
         ns.DB.char.Quests[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
         ns.HistoryFrame:Refresh()
