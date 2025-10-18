@@ -36,9 +36,9 @@ function HistoryFrame:Init()
     self.dataProvider = dataProvider
 
     local ScrollView = CreateScrollBoxListLinearView()
-    ScrollView:SetDataProvider(self.dataProvider)
     ScrollView:SetElementExtent(20)
     ScrollView:SetElementInitializer('Button', initializer)
+    ScrollView:SetDataProvider(self.dataProvider)
     self.ScrollView = ScrollView
 
     ScrollUtil.InitScrollBoxWithScrollBar(self.QuestList.ScrollBox, self.QuestList.ScrollBar, ScrollView)

@@ -23,8 +23,8 @@ local QuestHistory = {}
 
 function QuestHistory:UpdateQuestDB()
     local mapID = C_Map.GetBestMapForUnit('player')
-    local mapName = C_Map.GetMapInfo(mapID).name
-    local mapPos = C_Map.GetPlayerMapPosition(mapID, 'player')
+    local mapName = mapID and C_Map.GetMapInfo(mapID).name or nil
+    local mapPos = mapID and C_Map.GetPlayerMapPosition(mapID, 'player') or nil
     local x, y = 0, 0
     if mapPos then x, y = mapPos:GetXY() end
     local TIME = time()

@@ -16,19 +16,23 @@ function Addon:InitQDB()
     for _, id in pairs(quests) do if not ns.DB.char.Quests[id] then ns.DB.char.Quests[id] = {completed = true} end end
 end
 
+local processedQuests = {}
+
 function Addon:QUEST_LOG_UPDATE()
+    processedQuests = {} -- Reset processed quests for each update
     ns.changedQuests = ns.QuestHistory:GetChangedQuests() or {quests = {}, counter = 0}
     if ns.changedQuests.counter > 0 then
-        self:Print(ns.changedQuests.counter, 'Quests Changed:')
         ns.QuestHistory:UpdateQuestDB(true)
         ns.HistoryFrame:Refresh()
     end
 end
 
-function Addon:QUEST_DATA_LOAD_RESULT(e, id, success)    
-    if not ns.changedQuests or not ns.changedQuests.quests or not ns.changedQuests.quests[id] then
-        return
-    end
+function Addon:QUEST_DATA_LOAD_RESULT(e, id, success)
+    if not ns.changedQuests or not ns.changedQuests.quests or not ns.changedQuests.quests[id] then return end
+
+    -- Prevent duplicate processing
+    if processedQuests[id] then return end
+    processedQuests[id] = true
 
     if ns.DB.char.Quests[id] and ns.DB.char.Quests[id].completed ~= nil then
         ns.DB.char.Quests[id].title = C_QuestLog.GetTitleForQuestID(id) or 'Hidden/Tracking Quest'
